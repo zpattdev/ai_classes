@@ -27,6 +27,7 @@ def sigmoid(x):
   """
 
   ### START CODE HERE
+  s = 1. / (1. + np.exp(-x))
   ### END CODE HERE
 
   return s
@@ -65,7 +66,27 @@ def naive_softmax_loss_and_gradient(center_word_vec,outside_word_idx,outside_vec
   ### This numerically stable implementation helps you avoid issues pertaining
   ### to integer overflow.
   
-  ### START CODE HERE
+  ### START CODE HERE```python
+  # Calculate dot products between center word vector and all outside vectors
+  dot_products = outside_vectors.dot(center_word_vec)
+  
+  # Apply softmax to get probabilities
+  probs = softmax(dot_products)
+  
+  # Calculate loss using the negative log probability of the correct outside word
+  loss = -np.log(probs[outside_word_idx])
+  
+  # Calculate gradients
+  # Create one-hot vector for true outside word
+  y_true = np.zeros_like(probs)
+  y_true[outside_word_idx] = 1
+  
+  # Gradient for center word vector
+  grad_center_vec = outside_vectors.T.dot(probs - y_true)
+  
+  # Gradient for outside vectors
+  grad_outside_vecs = np.outer(probs - y_true, center_word_vec)
+
   ### END CODE HERE
 
   return loss, grad_center_vec, grad_outside_vecs
@@ -143,6 +164,16 @@ def skipgram(current_center_word, outside_words, word2ind, center_word_vectors, 
   grad_outside_vectors = np.zeros(outside_vectors.shape)
 
   ### START CODE HERE
+  for o_word in outside_words:
+     loss_curr, gradc, grado = word2vec_loss_and_gradient(
+        center_word_vectors[word2ind[current_center_word]],
+        word2ind[o_word],
+        outside_vectors,
+        dataset
+     )
+     loss += loss_curr
+     grad_center_vecs += gradc
+     grad_outside_vectors += grado
   ### END CODE HERE
 
   return loss, grad_center_vecs, grad_outside_vectors
@@ -243,6 +274,8 @@ def sgd(f, x0, step, iterations, postprocessing=None, use_saved=False,PRINT_EVER
 
     loss = None
     ### START CODE HERE
+    loss, grad = f(x)
+    x -= grad * step
     ### END CODE HERE
 
     x = postprocessing(x)
