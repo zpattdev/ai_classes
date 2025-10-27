@@ -67,26 +67,16 @@ def naive_softmax_loss_and_gradient(center_word_vec,outside_word_idx,outside_vec
   ### to integer overflow.
   
   ### START CODE HERE```python
-  # Calculate dot products between center word vector and all outside vectors
-  dot_products = outside_vectors.dot(center_word_vec)
-  
-  # Apply softmax to get probabilities
-  probs = softmax(dot_products)
-  
-  # Calculate loss using the negative log probability of the correct outside word
-  loss = -np.log(probs[outside_word_idx])
-  
-  # Calculate gradients
-  # Create one-hot vector for true outside word
-  y_true = np.zeros_like(probs)
-  y_true[outside_word_idx] = 1
-  
-  # Gradient for center word vector
-  grad_center_vec = outside_vectors.T.dot(probs - y_true)
-  
-  # Gradient for outside vectors
-  grad_outside_vecs = np.outer(probs - y_true, center_word_vec)
+  similarities = outside_vectors.dot(center_word_vec)
 
+  y_hat = softmax(similarities)
+  loss = -np.log(y_hat[outside_word_idx])
+  
+  y = np.zeros_like(y_hat)
+  y[outside_word_idx] = 1
+  
+  grad_center_vec = outside_vectors.T.dot(y_hat - y)
+  grad_outside_vecs = np.outer(y_hat - y, center_word_vec)
   ### END CODE HERE
 
   return loss, grad_center_vec, grad_outside_vecs
