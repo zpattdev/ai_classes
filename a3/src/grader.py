@@ -351,4 +351,5 @@ if __name__ == '__main__':
     assignment.addTest(getTestCaseForTestID(test_id))
   else:
     assignment.addTests(unittest.defaultTestLoader.discover('.', pattern='grader.py'))
+  print(assignment)
   CourseTestRunner().run(assignment)

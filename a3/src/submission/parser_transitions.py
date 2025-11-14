@@ -21,6 +21,9 @@ class PartialParse(object):
         self.sentence = sentence
 
         ### START CODE HERE
+        self.stack = ['ROOT']
+        self.buffer = [word for word in sentence]
+        self.dependencies = []
         ### END CODE HERE
 
     def parse_step(self, transition):
@@ -32,6 +35,15 @@ class PartialParse(object):
                         transition.
         """
         ### START CODE HERE
+        if transition == 'S':
+            next_word = self.buffer.pop(0)
+            self.stack.append(next_word)
+        elif transition == 'LA':
+            first_word, second_word = self.stack[-1], self.stack.pop(-2)
+            self.dependencies.append((first_word, second_word))
+        elif transition == 'RA':
+            second_word, first_word = self.stack[-2], self.stack.pop(-1)
+            self.dependencies.append((second_word, first_word))
         ### END CODE HERE
 
     def parse(self, transitions):
@@ -69,6 +81,22 @@ def minibatch_parse(sentences, model, device, batch_size):
     dependencies = None
 
     ### START CODE HERE
+    partial_parses = []
+    for sentence in sentences:
+        partial_parses.append(PartialParse(sentence))
+    unfinished_parses = partial_parses.copy()
+
+    while unfinished_parses:
+        pp_batch = [pp for pp in unfinished_parses[:batch_size]]
+        transitions = model.predict(pp_batch, device)
+        pop_list = []
+        for idx, partial_parse in enumerate(pp_batch):
+            partial_parse.parse_step(transitions[idx])
+            if len(partial_parse.stack) < 2 and len(partial_parse.buffer) == 0:
+                pop_list.append(idx)
+        unfinished_parses = [up for idx, up in enumerate(unfinished_parses) if not idx in pop_list]
+
+    dependencies = [parse.dependencies for parse in partial_parses]
     ### END CODE HERE
 
     return dependencies

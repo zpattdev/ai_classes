@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import random
 from pprint import pprint
 
@@ -59,6 +58,9 @@ class ParserModel(nn.Module):
         ###     Linear Layer: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear
         ###     Dropout: https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout
         ### START CODE HERE (~3 Lines)
+        self.embed_to_hidden = nn.Linear(n_features * self.embed_size, hidden_size)
+        self.dropout = nn.Dropout(dropout_prob)
+        self.hidden_to_logits = nn.Linear(hidden_size, n_classes)
         ### END CODE HERE
 
         self.reset_parameters()
@@ -87,6 +89,8 @@ class ParserModel(nn.Module):
 
         pass
         ### START CODE HERE (~2 Lines)
+        nn.init.xavier_uniform_(self.embed_to_hidden.weight)
+        nn.init.xavier_uniform_(self.hidden_to_logits.weight)
         ### END CODE HERE
 
     def embedding_lookup(self, t):
@@ -120,6 +124,8 @@ class ParserModel(nn.Module):
         ###     Embedding Layer: https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html 
         ###     View: https://pytorch.org/docs/stable/tensor_view.html
         ### START CODE HERE (~1-3 Lines)
+        embed_lookup_tensor = self.pretrained_embeddings(t)
+        x = embed_lookup_tensor.view(t.size(0), self.n_features * self.embed_size)
         ### END CODE HERE
         return x
 
@@ -155,5 +161,10 @@ class ParserModel(nn.Module):
         ### Please see the following docs for support:
         ###     ReLU: https://pytorch.org/docs/stable/generated/torch.nn.functional.relu.html#torch.nn.functional.relu 
         ###  START CODE HERE (~3-5 lines)
+        t_embeddings = self.embedding_lookup(t)
+        hidden_layer = self.embed_to_hidden(t_embeddings)
+        hidden_nonlinearity = nn.functional.relu(hidden_layer)
+        hidden_dropout = self.dropout(hidden_nonlinearity)
+        logits = self.hidden_to_logits(hidden_dropout)
         ### END CODE HERE
         return logits
