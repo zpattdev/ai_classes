@@ -2,10 +2,8 @@
 
 
 # Lecture vides
-lecture 5 - https://youtu.be/fyc0Jzr74y4?si=6RAMGtejgbjiOYfA
-lecture 6 - https://youtu.be/Ba6Fn1-Jsfw?si=6Dgxx9rEixzWWVT2
-start of 7 - https://youtu.be/J7ruSOIzhrE?si=6fykSuE_sAGbkFgv
-
+**TODO**
+  
 # Assignments:
 ## A5
 ### Suggested Reading Materials

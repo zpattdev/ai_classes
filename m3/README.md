@@ -5,6 +5,10 @@ https://docs.google.com/document/d/10bOPEuNiE-JycD2T9gYoCpxBOCikVPtcC1_EV3Jy7YY/
 **TODO**
 
 # Assignments:
+lecture 5 - https://youtu.be/fyc0Jzr74y4?si=6RAMGtejgbjiOYfA
+lecture 6 - https://youtu.be/Ba6Fn1-Jsfw?si=6Dgxx9rEixzWWVT2
+start of 7 - https://youtu.be/J7ruSOIzhrE?si=6fykSuE_sAGbkFgv
+
 ## A4
 ### Suggested Reading Materials
 * Neural Machine Translation, Seq2Seq, and Attention Lecture Notes
