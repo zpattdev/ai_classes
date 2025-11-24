@@ -313,7 +313,9 @@ class NMT(nn.Module):
         ###         https://pytorch.org/docs/stable/generated/torch.squeeze.html#torch-squeeze
 
         ### START CODE HERE (~3 Lines)
+        #print("DEBUG*********", dec_state)
         dec_state_t = self.decoder(Ybar_t, dec_state)
+        #print(dec_state_t[0])
         dec_hidden_squeezed =  dec_state_t[0].unsqueeze(2)
         e_t = torch.bmm(enc_hiddens_proj, dec_hidden_squeezed).squeeze(2)
         ### END CODE HERE
@@ -357,6 +359,7 @@ class NMT(nn.Module):
         ### END CODE HERE
 
         combined_output = O_t
+        dec_state = dec_state_t
         return dec_state, combined_output, e_t
 
     def generate_sent_masks(self, enc_hiddens: torch.Tensor, source_lengths: List[int]) -> torch.Tensor:
