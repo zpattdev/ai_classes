@@ -170,7 +170,7 @@ class NMT(nn.Module):
         padded_encoded, _ = nn.utils.rnn.pad_packed_sequence(packed_encoded)
 
         # reshape layers
-        encoded_hiddens = padded_encoded.permute(1, 0, 2)
+        enc_hiddens = padded_encoded.permute(1, 0, 2)
         last_hiddens_cat = torch.cat((last_hiddens[0], last_hiddens[1]), dim=1)
         last_cells_cat = torch.cat((last_cells[0], last_cells[1]), dim=1)
 
@@ -314,7 +314,7 @@ class NMT(nn.Module):
         ### START CODE HERE (~3 Lines)
         dec_state_t = self.decoder(Ybar_t, dec_state)
         dec_hidden_squeezed =  dec_state_t[0].unsqueeze(2)
-        e_t = torch.bbm(enc_hiddens_proj, dec_hidden_squeezed).squeeze(2)
+        e_t = torch.bmm(enc_hiddens_proj, dec_hidden_squeezed).squeeze(2)
         ### END CODE HERE
 
         # Set e_t to -inf where enc_masks has 1
