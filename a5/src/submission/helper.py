@@ -61,35 +61,27 @@ def finetune(reading_params_path, finetune_corpus_path, pretrain_dataset, block_
     trainer_obj = None #Trainer object (see trainer.py for more details)
     tconf = None #TrainerConfig object (see trainer.py for more details)
     ### START CODE HERE
-    if not reading_params_path:
-        # just finetuning
-        tconf = TrainerConfig(
-            max_epochs=75,
-            batch_size=256,
-            learning_rate=finetune_lr,
-            lr_decay=True,
-            warmup_tokens=512*20,
-            final_tokens=200*len(pretrain_dataset)*block_size,
-            num_workers=0
-        )
-        trainer_obj = Trainer(
-            model=model,
-            train_dataset=NameDataset(open(finetune_corpus_path, encoding='utf-8').read(), pretrain_dataset),
-            test_dataset=None,
-            config=tconf
-        )
-    else:
+    max_epochs = 75
+    if reading_params_path:
         # load pretrained weights from disk
-        tconf =TrainerConfig(
-            max_epochs=10,
-            batch_size=256,
-            learning_rate=finetune_lr,
-            lr_decay=True,
-            warmup_tokens=512*20,
-            final_tokens=200*len(pretrain_dataset)*block_size,
-            num_workers=0
-        )
-        raise NotImplementedError("TODO: implement pretraining")
+        model.load_state_dict(torch.load(reading_params_path, map_location=torch.device('cpu'), weights_only=True))
+        max_epochs = 10
+
+    tconf =TrainerConfig(
+        max_epochs=max_epochs,
+        batch_size=256,
+        learning_rate=finetune_lr,
+        lr_decay=True,
+        warmup_tokens=512*20,
+        final_tokens=200*len(pretrain_dataset)*block_size,
+        num_workers=0
+    )    
+    trainer_obj = Trainer(
+        model=model,
+        train_dataset=NameDataset(open(finetune_corpus_path, encoding='utf-8').read(), pretrain_dataset),
+        test_dataset=None,
+        config=tconf
+    )
     ### END CODE HERE
     return tconf, trainer_obj
 
@@ -114,6 +106,21 @@ def pretrain(pretrain_dataset, block_size, model, pretrain_lr=6e-3, writer=None)
     tconf = None #TrainerConfig object (see trainer.py for more details)
 
     ### START CODE HERE
+    tconf = TrainerConfig(
+        max_epochs=650,
+        batch_size=128,
+        learning_rate=pretrain_lr,
+        lr_decay=True,
+        warmup_tokens=512*20,
+        final_tokens=200*len(pretrain_dataset)*block_size,
+        num_workers=0
+    )
+    trainer_obj = Trainer(
+        model=model,
+        train_dataset=pretrain_dataset,
+        test_dataset=None,
+        config=tconf
+    )
     ### END CODE HERE
     return tconf, trainer_obj
 
